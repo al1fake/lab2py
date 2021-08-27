@@ -125,4 +125,3 @@ class Parser:
             return dictionary_function(self, obj_dict)
         else:
             return dictionary_object(self, obj_dict)
-
