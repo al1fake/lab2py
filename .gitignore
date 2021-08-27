@@ -1,3 +1,4 @@
 *.json
+*.toml
 /.idea
 /__pycache__
