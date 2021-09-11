@@ -3,16 +3,14 @@ from collections import namedtuple
 from types import FunctionType, CodeType
 import builtins
 
-
-def isbasetype(obj):
-    return type(obj) in [int, float, bool, str, type(None)]
-
+def isbase(obj):
+    return type(obj) in [int, float, str, bool, type(None)]
 
 def object_dictionary(self, obj):
-    if isbasetype(obj):
+    if isbase(obj):
         return obj
     elif isinstance(obj, list):
-        lst = []
+        lst = list()
         for item in obj:
             lst.append(self.object_to_dict(item))
         return lst
@@ -21,37 +19,37 @@ def object_dictionary(self, obj):
     else:
         return self_dictionary(self, obj.__dict__)
 
-
 def self_dictionary(self, dict_obj):
-    obj_dict = {}
-    for(key, value) in dict_obj.items():
-        if isbasetype(value):
+    obj_dict = dict()
+    for (key, value) in dict_obj.items():
+        if isbase(value):
             obj_dict[key] = value
         else:
             obj_dict[key] = self.object_to_dict(value)
+
     return obj_dict
 
-
 def dictionary_object(self, dict_obj):
-    if isbasetype(dict_obj):
+    if isbase(dict_obj):
         return dict_obj
     elif isinstance(dict_obj, list):
-        lst = []
+        lst = list()
         for item in dict_obj:
             lst.append(self.dict_to_object(item))
         return lst
-    else:
-        dct = {}
-        for (key, value) in dict_obj.items():
-            if not isbasetype(value):
-                dct[key] = self.dict_to_object(value)
-            else:
-                dct[key] = value
-        return namedtuple('object', dct.keys())(*dct.value)
 
+    else:
+        temp = dict()
+        for (key, value) in dict_obj.items():
+            if not isbase(value):
+                temp[key] = self.dict_to_object(value)
+            else:
+                temp[key] = value
+
+        return namedtuple('object', temp.keys())(*temp.values())
 
 def function_dictionary(self, func_obj):
-    func = {}
+    func = dict()
 
     function_code = dict()
     code_pairs = inspect.getmembers(func_obj.__code__)
@@ -67,12 +65,11 @@ def function_dictionary(self, func_obj):
     function_globals[name] = name + '<function>'
     global_pairs = func_obj.__globals__.items()
     for (key, value) in global_pairs:
-        if isbasetype(value):
+        if isbase(value):
             function_globals[key] = value
     func['globals'] = function_globals
 
     return func
-
 
 def dictionary_function(self, dict_func):
     function_globals = dict_func['globals']
@@ -116,9 +113,9 @@ class Parser:
 
     def load(self, file_path):
         with open(file_path, 'r') as file:
-            obj = self.loads(file.read())
+            object = self.loads(file.read())
 
-        return obj
+        return object
 
     def loads(self, obj_dict):
         if 'code' in obj_dict:
